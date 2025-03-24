@@ -11,3 +11,4 @@ wheels/
 raw_data
 data
 BIRD_INSTRUCT
+.env

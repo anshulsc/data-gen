@@ -21,6 +21,6 @@ echo "Running tableVQA.py for database ${db_id}..."
 python vqa/tableVQA.py \
     --dataset_folder "${dataset_folder}" \
     --output_folder "${output_folder}" \
-    --api_key "AIzaSyCt_99EHzoe3K6uxQ86JBQbo6LuUSl3pnk"
+    --api_key "API_KEY"
 
 echo "TableVQA generation completed for ${db_id}!"

@@ -36,6 +36,6 @@ python db_scripts/gen_db.py \
     --json_dir "${output_folder}/${db_id}" \
     --output_dir "${gen_db_folder}" \
     --db_id "${db_id}" \
-    --api_key "AIzaSyBMLGJr-55FedA7vul19WYPbKpfIpg1I5w"
+    --api_key "API_KEY"
 
 echo "Database extraction and generation completed for ${db_id}!"

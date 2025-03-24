@@ -18,7 +18,7 @@ class GeminiModel:
     def __init__(self, cfg: Config):
         self.cfg = cfg
         load_dotenv()
-        genai.configure(api_key="AIzaSyBMLGJr-55FedA7vul19WYPbKpfIpg1I5w")
+        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
         self.generation_config = {
             "temperature": 0.2,
             "top_p": 0.95,
@@ -414,5 +414,5 @@ if __name__ == "__main__":
   --json_dir /Users/anshulsingh/Hamburg/experiments/benchmarks/data_gen/data/MtabVQA-BIRD/chicago_crime\
   --output_dir /Users/anshulsingh/Hamburg/experiments/benchmarks/data_gen/data/MtabVQA-BIRD/chicago_crime/gen_db \
   --db_id chicago_crime \
-  --api_key AIzaSyBMLGJr-55FedA7vul19WYPbKpfIpg1I5w
+  --api_key API_KEY
     """
