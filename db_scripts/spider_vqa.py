@@ -21,7 +21,7 @@ class GeminiModel:
     def __init__(self, cfg: Config):
         self.cfg = cfg
         load_dotenv()
-        genai.configure(api_key="AIzaSyBMLGJr-55FedA7vul19WYPbKpfIpg1I5w")
+        genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
         self.generation_config = {
             "temperature": 1,
             "top_p": 0.95,

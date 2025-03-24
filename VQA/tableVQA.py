@@ -311,13 +311,45 @@ def process_dataset(dataset_folder, output_folder, generator_model, verifier_mod
     os.makedirs(output_folder, exist_ok=True)
 
     types, examples = load_question_types_and_examples()
-
-    db_folders = [os.path.join(dataset_folder, d) for d in os.listdir(dataset_folder) 
-                  if os.path.isdir(os.path.join(dataset_folder, d))]
     
-    for db_folder in db_folders:
-        cprint(f"Processing database: {os.path.basename(db_folder)}", "magenta")
-        process_database_folder(db_folder, output_folder, types, examples, generator_model, verifier_models)
+
+    table_files = [f for f in os.listdir(dataset_folder) if f.endswith("_subset.json")]
+    if table_files:
+        # The dataset_folder itself contains table pair data
+        cprint(f"Processing folder: {os.path.basename(dataset_folder)}", "magenta")
+        process_database_folder(dataset_folder, output_folder, types, examples, generator_model, verifier_models)
+    else:
+        # Look for database folders and their potential subfolders
+        db_folders = [os.path.join(dataset_folder, d) for d in os.listdir(dataset_folder) 
+                      if os.path.isdir(os.path.join(dataset_folder, d))]
+ 
+        
+        for db_folder in db_folders:
+            db_name = os.path.basename(db_folder)
+            cprint(f"Examining database folder: {db_name}", "magenta")
+            
+            # Check if this folder directly contains table files
+            folder_table_files = [f for f in os.listdir(db_folder) if f.endswith("_subset.json")]
+            
+            if folder_table_files:
+                # This folder has table files directly, process it
+                cprint(f"Processing database folder with tables: {db_name}", "blue")
+                process_database_folder(db_folder, output_folder, types, examples, generator_model, verifier_models)
+            else:
+                # Check for table pair subfolders
+                subfolders = [os.path.join(db_folder, d) for d in os.listdir(db_folder) 
+                              if os.path.isdir(os.path.join(db_folder, d))]
+                
+                for subfolder in subfolders:
+                    subfolder_name = os.path.basename(subfolder)
+                    # Only process folders that have table files
+                    subfolder_table_files = [f for f in os.listdir(subfolder) if f.endswith("_subset.json")]
+                    
+                    if subfolder_table_files:
+                        cprint(f"Processing table pair subfolder: {db_name}/{subfolder_name}", "cyan")
+                        # Create output folder with subfolder name under the database name
+                        specific_output_folder = os.path.join(output_folder, db_name, subfolder_name)
+                        process_database_folder(subfolder, specific_output_folder, types, examples, generator_model, verifier_models)
 
 def main():
     parser = argparse.ArgumentParser(
@@ -368,11 +400,19 @@ if __name__ == "__main__":
     main()
     
 """
+# Example usage:
 
-mkdir /Users/anshulsingh/Hamburg/experiments/benchmarks/data_gen/BIRD_INSTRUCT/{db_id}
+# Create output directory if it doesn't exist
+mkdir -p /Users/anshulsingh/Hamburg/experiments/benchmarks/data_gen/BIRD_INSTRUCT/{db_id}
+
+# Process a specific database with multiple table pairs
 python tableVQA.py \
-    --dataset_folder "/Users/anshulsingh/Hamburg/experiments/benchmarks/data_gen/data/MtabVQA-BIRD/{db_id}gen_db/{db_id}" \
+    --dataset_folder "/Users/anshulsingh/Hamburg/experiments/benchmarks/data_gen/data/MtabVQA-BIRD/{db_id}/gen_db" \
     --output_folder "/Users/anshulsingh/Hamburg/experiments/benchmarks/data_gen/BIRD_INSTRUCT/{db_id}" \
-    --api_key "AIzaSyCt_99EHzoe3K6uxQ86JBQbo6LuUSl3pnk"
+    --api_key "YOUR_API_KEY"
 
+# The script will now automatically:
+# 1. Find all table pair folders in the database directory
+# 2. Process each one that contains *_subset.json files
+# 3. Organize outputs by database name and table pair in the output directory
 """
